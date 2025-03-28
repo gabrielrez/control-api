@@ -3,23 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Services\TagService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
     protected $tag_service;
 
+
+
     public function __construct(TagService $tag_service)
     {
         $this->tag_service = $tag_service;
     }
 
-    public function index(Request $request)
+
+
+    public function index(Request $request): JsonResponse
     {
         return response()->json($request->user()->expenses);
     }
 
-    public function show(Request $request, int $id)
+
+
+    public function show(Request $request, int $id): JsonResponse
     {
         if (!$expense = $request->user()->expenses()->find($id)) {
             return response()->json(['message' => 'Expense not found'], 404);
@@ -28,7 +35,9 @@ class ExpenseController extends Controller
         return response()->json($expense);
     }
 
-    public function store(Request $request)
+
+
+    public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'tag_id' => 'required|exists:tags,id',
@@ -48,7 +57,9 @@ class ExpenseController extends Controller
         ], 201);
     }
 
-    public function delete(Request $request, int $id)
+
+
+    public function delete(Request $request, int $id): JsonResponse
     {
         if (!$expense = $request->user()->expenses()->find($id)) {
             return response()->json(['message' => 'Expense not found'], 404);

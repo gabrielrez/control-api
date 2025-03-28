@@ -11,6 +11,8 @@ class TagController extends Controller
         return response()->json($request->user()->tags);
     }
 
+
+
     public function show(Request $request, int $id)
     {
         if (!$tag = $request->user()->tags()->find($id)) {
@@ -19,6 +21,8 @@ class TagController extends Controller
 
         return response()->json($tag);
     }
+
+
 
     public function store(Request $request)
     {
@@ -33,6 +37,8 @@ class TagController extends Controller
             'expense' => $tag
         ], 201);
     }
+
+
 
     public function delete(Request $request, int $id)
     {
