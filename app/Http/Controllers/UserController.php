@@ -8,6 +8,6 @@ class UserController extends Controller
 {
     public function show(Request $request)
     {
-        return response()->json(['user' => $request->user()]);
+        return response()->json($request->user());
     }
 }
