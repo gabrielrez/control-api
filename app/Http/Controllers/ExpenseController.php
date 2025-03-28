@@ -28,8 +28,7 @@ class ExpenseController extends Controller
             'date' => 'required|date',
         ]);
 
-        $user = $request->user();
-        $expense = $user->expenses()->create($validated);
+        $expense = $request->user()->expenses()->create($validated);
 
         return response()->json([
             'message' => 'Expense created successfully',
