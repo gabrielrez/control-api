@@ -8,13 +8,13 @@ use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
-    protected $tag_service;
+    protected $TagService;
 
 
 
-    public function __construct(TagService $tag_service)
+    public function __construct(TagService $TagService)
     {
-        $this->tag_service = $tag_service;
+        $this->TagService = $TagService;
     }
 
 
@@ -45,7 +45,7 @@ class ExpenseController extends Controller
             'date' => 'required|date',
         ]);
 
-        if (!$this->tag_service->userOwnsTag($request->user(), $validated['tag_id'])) {
+        if (!$this->TagService->userOwnsTag($request->user(), $validated['tag_id'])) {
             return response()->json(['message' => 'Invalid tag'], 403);
         }
 
