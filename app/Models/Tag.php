@@ -8,13 +8,12 @@ class Tag extends Model
 {
     protected $fillable = [
         'name',
-        'expense_id',
         'user_id'
     ];
 
     public function expense()
     {
-        return $this->belongsTo(Expense::class);
+        return $this->belongsToMany(Expense::class);
     }
 
     public function user()

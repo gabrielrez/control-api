@@ -33,7 +33,7 @@ class TagController extends Controller
         $tag = $request->user()->tags()->create($validated);
 
         return response()->json([
-            'message' => 'Expense created successfully',
+            'message' => 'Tag created successfully',
             'expense' => $tag
         ], 201);
     }

@@ -21,7 +21,19 @@ class ExpenseController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        return response()->json($request->user()->expenses);
+        $expenses = $request->user()->expenses()->with('tag')->get();
+
+        $result = $expenses->map(function ($expense) {
+            return [
+                'id' => $expense->id,
+                'amount' => $expense->amount,
+                'tag' => $expense->tag_name,
+                'created_at' => $expense->created_at,
+                'updated_at' => $expense->updated_at,
+            ];
+        });
+
+        return response()->json($result);
     }
 
 
@@ -42,7 +54,6 @@ class ExpenseController extends Controller
         $validated = $request->validate([
             'tag_id' => 'required|exists:tags,id',
             'amount' => 'required|numeric|min:0',
-            'date' => 'required|date',
         ]);
 
         if (!$this->TagService->userOwnsTag($request->user(), $validated['tag_id'])) {

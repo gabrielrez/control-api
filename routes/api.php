@@ -17,6 +17,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::get('/me', [UserController::class, 'show']);
+    Route::get('/total', [UserController::class, 'total']);
 
     Route::get('/tags', [TagController::class, 'index']);
     Route::get('/tags{id}', [TagController::class, 'show']);

@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Expense extends Model
 {
     protected $fillable = [
-        'tag_id',
         'amount',
+        'tag_id',
         'user_id'
     ];
 
@@ -19,6 +19,11 @@ class Expense extends Model
 
     public function tag()
     {
-        return $this->hasOne(Tag::class);
+        return $this->belongsTo(Tag::class);
+    }
+
+    public function getTagNameAttribute(): ?string
+    {
+        return $this->tag->name ?? null;
     }
 }
