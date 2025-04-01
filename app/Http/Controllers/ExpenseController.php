@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
-    protected $expenseModel;
+    protected Expense $expenseModel;
 
 
 
