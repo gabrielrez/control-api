@@ -2,36 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Expense;
 use App\Services\TagService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
-    protected $TagService;
+    protected $expenseModel;
 
 
 
-    public function __construct(TagService $TagService)
+    public function __construct(Expense $expenseModel)
     {
-        $this->TagService = $TagService;
+        $this->expenseModel = $expenseModel;
     }
 
 
 
     public function index(Request $request): JsonResponse
     {
-        $expenses = $request->user()->expenses()->with('tag')->get();
+        $query = $request->user()->expenses()->with('tag')->latest();
 
-        $result = $expenses->map(function ($expense) {
-            return [
-                'id' => $expense->id,
-                'amount' => $expense->amount,
-                'tag' => $expense->tag_name,
-                'created_at' => $expense->created_at,
-                'updated_at' => $expense->updated_at,
-            ];
-        });
+        if ($request->query('filter') === 'this_month') {
+            $this->expenseModel->filterByMonth($query);
+        }
+
+        $expenses = $query->get();
+        $result = $expenses->map->toApiFormat();
 
         return response()->json($result);
     }
@@ -56,7 +54,7 @@ class ExpenseController extends Controller
             'amount' => 'required|numeric|min:0',
         ]);
 
-        if (!$this->TagService->userOwnsTag($request->user(), $validated['tag_id'])) {
+        if (!$request->user()->tags()->where('id', $validated['tag_id'])->exists()) {
             return response()->json(['message' => 'Invalid tag'], 403);
         }
 

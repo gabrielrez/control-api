@@ -8,7 +8,7 @@ class TagController extends Controller
 {
     public function index(Request $request)
     {
-        return response()->json($request->user()->tags);
+        return response()->json($request->user()->tags()->pluck('name', 'id'));
     }
 
 

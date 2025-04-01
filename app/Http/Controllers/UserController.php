@@ -17,6 +17,11 @@ class UserController extends Controller
 
     public function total(Request $request): JsonResponse
     {
-        return response()->json(Expense::where('user_id', $request->user()->id)->sum('amount'));
+        $total = Expense::where('user_id', $request->user()->id)
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->sum('amount');
+
+        return response()->json($total);
     }
 }
