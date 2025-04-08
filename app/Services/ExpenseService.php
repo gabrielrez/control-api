@@ -20,7 +20,7 @@ class ExpenseService
 
     public function total(int $user_id, ?string $from, ?string $to)
     {
-        $query = Expense::where('user_id', $user_id);
+        $query = $this->expenseModel->where('user_id', $user_id);
 
         if ($from) {
             $query->where('created_at', '>=', Carbon::parse($from)->startOfDay());
