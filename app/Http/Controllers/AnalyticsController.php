@@ -6,12 +6,12 @@ use Illuminate\Http\Request;
 
 class AnalyticsController extends Controller
 {
-    public function expensesLastMonth()
+    public function totalLastMonth()
     {
         //
     }
 
-    public function expensesLastWeek()
+    public function totalLastWeek()
     {
         //
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Expense;
+use App\Services\ExpenseService;
 use App\Services\TagService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -10,12 +11,14 @@ use Illuminate\Http\Request;
 class ExpenseController extends Controller
 {
     protected Expense $expenseModel;
+    protected ExpenseService $expenseService;
 
 
 
-    public function __construct(Expense $expenseModel)
+    public function __construct(Expense $expenseModel, ExpenseService $expenseService)
     {
         $this->expenseModel = $expenseModel;
+        $this->expenseService = $expenseService;
     }
 
 
@@ -77,5 +80,23 @@ class ExpenseController extends Controller
         $expense->delete();
 
         return response()->json(['message' => 'Expense deleted successfully']);
+    }
+
+
+
+    public function total(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'from' => 'nullable|date',
+            'to' => 'nullable|date',
+        ]);
+
+        $total = $this->expenseService->totalAmount(
+            $request->user()->id,
+            $validated['from'] ?? null,
+            $validated['to'] ?? null
+        );
+
+        return response()->json($total);
     }
 }

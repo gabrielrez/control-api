@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\UserController;
+use App\Models\Expense;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -17,13 +18,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::get('/me', [UserController::class, 'show']);
-    Route::get('/total', [UserController::class, 'total']);
 
     Route::get('/tags', [TagController::class, 'index']);
     Route::get('/tags{id}', [TagController::class, 'show']);
     Route::post('/tags', [TagController::class, 'store']);
     Route::delete('/tags{id}', [TagController::class, 'delete']);
 
+    Route::get('/expenses/total', [ExpenseController::class, 'total']);
     Route::get('/expenses', [ExpenseController::class, 'index']);
     Route::get('/expenses/{id}', [ExpenseController::class, 'show']);
     Route::post('/expenses', [ExpenseController::class, 'store']);
