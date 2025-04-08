@@ -7,7 +7,18 @@ use Carbon\Carbon;
 
 class ExpenseService
 {
-    public function totalAmount(int $user_id, ?string $from, ?string $to)
+    protected Expense $expenseModel;
+
+
+
+    public function __construct(Expense $expenseModel)
+    {
+        $this->expenseModel = $expenseModel;
+    }
+
+
+
+    public function total(int $user_id, ?string $from, ?string $to)
     {
         $query = Expense::where('user_id', $user_id);
 
@@ -25,5 +36,20 @@ class ExpenseService
         }
 
         return $query->sum('amount');
+    }
+
+
+
+    public function list(int $user_id, ?string $filter = null)
+    {
+        $query = Expense::where('user_id', $user_id)
+            ->with('tag')
+            ->latest();
+
+        if ($filter === 'this_month') {
+            $this->expenseModel->filterByMonth($query);
+        }
+
+        return $query->get()->map->toApiFormat();
     }
 }

@@ -2,22 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Expense;
 use App\Services\ExpenseService;
-use App\Services\TagService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
-    protected Expense $expenseModel;
     protected ExpenseService $expenseService;
 
 
 
-    public function __construct(Expense $expenseModel, ExpenseService $expenseService)
+    public function __construct(ExpenseService $expenseService)
     {
-        $this->expenseModel = $expenseModel;
         $this->expenseService = $expenseService;
     }
 
@@ -25,16 +21,34 @@ class ExpenseController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $query = $request->user()->expenses()->with('tag')->latest();
+        $validated = $request->validate([
+            'filter' => 'nullable|string',
+        ]);
 
-        if ($request->query('filter') === 'this_month') {
-            $this->expenseModel->filterByMonth($query);
-        }
+        $expenses = $this->expenseService->list(
+            $request->user()->id,
+            $validated['filter'] ?? null
+        );
 
-        $expenses = $query->get();
-        $result = $expenses->map->toApiFormat();
+        return response()->json($expenses);
+    }
 
-        return response()->json($result);
+
+
+    public function total(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'from' => 'nullable|date',
+            'to' => 'nullable|date',
+        ]);
+
+        $total = $this->expenseService->total(
+            $request->user()->id,
+            $validated['from'] ?? null,
+            $validated['to'] ?? null
+        );
+
+        return response()->json($total);
     }
 
 
@@ -47,8 +61,6 @@ class ExpenseController extends Controller
 
         return response()->json($expense);
     }
-
-
 
     public function store(Request $request): JsonResponse
     {
@@ -69,8 +81,6 @@ class ExpenseController extends Controller
         ], 201);
     }
 
-
-
     public function delete(Request $request, int $id): JsonResponse
     {
         if (!$expense = $request->user()->expenses()->find($id)) {
@@ -80,23 +90,5 @@ class ExpenseController extends Controller
         $expense->delete();
 
         return response()->json(['message' => 'Expense deleted successfully']);
-    }
-
-
-
-    public function total(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'from' => 'nullable|date',
-            'to' => 'nullable|date',
-        ]);
-
-        $total = $this->expenseService->totalAmount(
-            $request->user()->id,
-            $validated['from'] ?? null,
-            $validated['to'] ?? null
-        );
-
-        return response()->json($total);
     }
 }
